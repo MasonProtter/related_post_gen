@@ -62,10 +62,10 @@ function related(posts)
         inds = tag_map[post.tags]
 
         @views shared_tags[inds] .+= 1
-
-        top6 = (partialsortperm(shared_tags, 1:6, rev=true))
-        top5 = NTuple{5}(Iterators.take(Iterators.filter(x -> x != i, top6), 5))
-
+        # Don't self count
+        shared_tages[i] = 0
+        
+        top5 = NTuple{5}(partialsortperm(shared_tags, 1:5, rev=true))
         relatedposts[i] = RelatedPost(post._id, post.tags, posts[SVector(top5)])
     end
 
