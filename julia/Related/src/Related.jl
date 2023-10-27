@@ -25,8 +25,8 @@ end
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
 function fastmaxindex(xs::Vector{T}) where {T}
-    maxn = MVector{topn, Int}(undef) .= 1
-    maxv = MVector{topn, T}(undef) .= 0
+    maxn = @MVector ones(topn)
+    maxv = @MVector zeros(topn)
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
@@ -52,7 +52,7 @@ function related(posts)
     tagmap = Dict{Symbol,Vector{T}}()
     for (idx, post) in enumerate(posts)
         for tag in post.tags
-            tags = get!(() -> sizehint!(T[], 1000), tagmap, tag)
+            tags = get!(() -> T[], tagmap, tag)
             push!(tags, idx)
         end
     end
