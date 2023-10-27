@@ -24,9 +24,9 @@ end
 
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
-function fastmaxindex(xs::Vector{T}) where {T}
-    maxn = MVector(ntuple(_ -> 1, topn))
-    maxv = MVector(ntuple(_ -> zero(T), topn))
+function fastmaxindex!(xs::Vector{T}, maxn, maxv) where {T}
+    maxn .= 1
+    maxv .= 0
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
@@ -60,6 +60,9 @@ function related(posts)
     relatedposts = Vector{RelatedPost}(undef, length(posts))
     taggedpostcount = Vector{T}(undef, length(posts))
 
+    maxn = MVector{topn, Int}(undef)
+    maxv = MVector{topn, T}(undef)
+    
     for (i, post) in enumerate(posts)
         taggedpostcount .= 0
         # for each post (`i`-th)
@@ -74,7 +77,7 @@ function related(posts)
         # don't self count
         taggedpostcount[i] = 0
 
-        maxn = fastmaxindex(taggedpostcount)
+        fastmaxindex!(taggedpostcount, maxn, maxv)
 
         relatedpost = RelatedPost(post._id, post.tags, SVector{topn}(@view posts[maxn]))
         relatedposts[i] = relatedpost
