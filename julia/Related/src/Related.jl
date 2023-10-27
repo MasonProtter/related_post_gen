@@ -25,8 +25,8 @@ end
 StructTypes.StructType(::Type{PostData}) = StructTypes.Struct()
 
 function fastmaxindex(xs::Vector{T}) where {T}
-    maxn = @MVector ones(topn)
-    maxv = @MVector zeros(topn)
+    maxn = MVector(ntuple(_ -> 1, topn))
+    maxv = MVector(ntuple(_ -> zero(T), topn))
     top = maxv[1]
     for (i, x) in enumerate(xs)
         if x > top
